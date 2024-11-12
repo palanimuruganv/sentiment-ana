@@ -83,7 +83,6 @@
 <body>
     <div class="container">
         <h1>Text Input Example</h1>
-        <!-- Add ID to form and input fields -->
         <form id="text-form" method="POST">
             <input id="user-input" type="text" name="user_input" class="input-field" placeholder="Enter your text" />
             <button type="submit" class="submit-button">Submit</button>
@@ -95,55 +94,49 @@
     <script>
         // Map emotions to emojis
         const emotionToEmoji = {
-            "positive": "😊",   // Happy face for positive sentiment
-            "negative": "😢",   // Sad face for negative sentiment
-            "neutral": "😐"     // Neutral face for neutral sentiment
+            "positive": "😊",
+            "negative": "😢",
+            "neutral": "😐"
         };
 
-        // Add event listener to the form to intercept the submit event
+        // Add event listener to the form
         document.getElementById('text-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the default form submission
+            event.preventDefault();
 
             // Get user input
             const userInput = document.getElementById('user-input').value;
 
             // Send user input to the server via fetch POST request
             fetch('https://sentiment-ana.onrender.com/classify', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ text: userInput })
-})
-.then(response => {
-    if (!response.ok) {
-        return response.text().then(err => { 
-            throw new Error(err || 'Unknown error occurred'); 
-        });
-    }
-    // Check for empty response before parsing
-    return response.text().then(text => text ? JSON.parse(text) : {});
-})
-.then(data => {
-    console.log("Response data:", data);
-    // Handle your data here
-})
-.catch(error => console.error("Error:", error));
-
-.then(data => {
-    const emotion = data.predicted_emotion.toLowerCase();
-    const emoji = emotionToEmoji[emotion] || "🤔";
-    document.getElementById('result').innerHTML = `
-        <h2>Predicted Emotion:</h2>
-        <p class="emoji">${emoji}</p>
-        <p class="result-text">${emotion.charAt(0).toUpperCase() + emotion.slice(1)}</p>
-    `;
-})
-.catch(error => {
-    document.getElementById('result').innerHTML = `<p>Error: ${error.message}</p>`;
-});
-
-            
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text: userInput })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(err => { 
+                        throw new Error(err || 'Unknown error occurred'); 
+                    });
+                }
+                // Check for empty response before parsing
+                return response.text().then(text => text ? JSON.parse(text) : {});
+            })
+            .then(data => {
+                console.log("Response data:", data);
+                const emotion = data.predicted_emotion.toLowerCase();
+                const emoji = emotionToEmoji[emotion] || "🤔";
+                document.getElementById('result').innerHTML = `
+                    <h2>Predicted Emotion:</h2>
+                    <p class="emoji">${emoji}</p>
+                    <p class="result-text">${emotion.charAt(0).toUpperCase() + emotion.slice(1)}</p>
+                `;
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = `<p>Error: ${error.message}</p>`;
+                console.error("Error:", error);
+            });
         });
     </script>
 </body>
